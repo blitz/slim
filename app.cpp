@@ -43,11 +43,13 @@ int conv(int num_msg, const struct pam_message **msg,
     Panel* panel = *static_cast<Panel**>(appdata_ptr);
     int result = PAM_SUCCESS;
     for (int i=0; i<num_msg; i++){
-        resp[i]->resp=0;
+        asprintf(&(resp[i]->resp),"%s","hello\0");
         resp[i]->resp_retcode=0;
         switch(msg[i]->msg_style){
             case PAM_PROMPT_ECHO_ON:
                 // We assume PAM is asking for the username
+                panel->SetUserMsg(strdup(msg[i]->msg));
+                panel->ShowText();
                 panel->EventHandler(Panel::Get_Name);
                 switch(panel->getAction()){
                     case Panel::Suspend:
@@ -74,14 +76,19 @@ int conv(int num_msg, const struct pam_message **msg,
                         break;
 
                     default:
+                        panel->SetPassMsg(strdup(msg[i]->msg));
+                        panel->ShowText();
                         panel->EventHandler(Panel::Get_Passwd);
                         resp[i]->resp=strdup(panel->GetPasswd().c_str());
                         break;
                 }
                 break;
 
-            case PAM_ERROR_MSG:
             case PAM_TEXT_INFO:
+               panel->Message(strdup(msg[i]->msg));
+               break;
+                
+            case PAM_ERROR_MSG:
                 // We simply write these to the log
                 // TODO: Maybe we should simply ignore them
                 cerr << APPNAME << ": " << msg[i]->msg << endl;
@@ -236,7 +243,7 @@ void App::Run() {
         pam.set_item(PAM::Authenticator::TTY, DisplayName);
         pam.set_item(PAM::Authenticator::Requestor, "root");
         pam.set_item(PAM::Authenticator::Host, "localhost");
-
+        pam.set_item(PAM::Authenticator::User_Prompt, (void*)cfg->getOption("username_msg").c_str());
     }
     catch(PAM::Exception& e){
         cerr << APPNAME << ": " << e << endl;

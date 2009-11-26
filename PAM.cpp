@@ -158,7 +158,7 @@ namespace PAM {
     }
 
     void Authenticator::open_session(void){
-        switch((last_result=pam_setcred(pam_handle, PAM_ESTABLISH_CRED))){
+        switch((last_result=pam_setcred(pam_handle, PAM_REINITIALIZE_CRED))){
             default:
             case PAM_CRED_ERR:
             case PAM_CRED_UNAVAIL:

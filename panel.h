@@ -55,8 +55,11 @@ public:
     void ClosePanel();
     void ClearPanel();
     void Message(const std::string& text);
+    void SetUserMsg(const std::string& text);
+    void SetPassMsg(const std::string& text);
     void Error(const std::string& text);
     void EventHandler(const FieldType& curfield);
+    void ShowText();
     std::string getSession();
     ActionType getAction(void) const;
 
@@ -72,7 +75,6 @@ private:
     unsigned long GetColor(const char* colorname);
     void OnExpose(void);
     bool OnKeyPress(XEvent& event);
-    void ShowText();
     void SwitchSession();
     void ShowSession();
 
@@ -139,6 +141,8 @@ private:
     int password_y;
     std::string welcome_message;
     std::string intro_message;
+    std::string username_message;
+    std::string password_message;
 
     // Pixmap data
     Pixmap PanelPixmap;

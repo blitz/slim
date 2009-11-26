@@ -136,6 +136,8 @@ Panel::Panel(Display* dpy, int scr, Window root, Cfg* config,
     // Read (and substitute vars in) the welcome message
     welcome_message = cfg->getWelcomeMessage();
     intro_message = cfg->getOption("intro_msg");
+    username_message = cfg->getOption("username_msg");
+    password_message = cfg->getOption("password_msg");
 }
 
 Panel::~Panel() {
@@ -490,6 +492,14 @@ bool Panel::OnKeyPress(XEvent& event) {
     return true;
 }
 
+void Panel::SetUserMsg(const std::string& text) {
+    username_message = text;
+}
+
+void Panel::SetPassMsg(const std::string& text) {
+    password_message = text;
+}
+
 // Draw welcome and "enter username" message
 void Panel::ShowText(){
     string cfgX, cfgY;
@@ -522,7 +532,7 @@ void Panel::ShowText(){
     /* Enter username-password message */
     string msg;
     if (!singleInputMode|| field == Get_Passwd ) {
-        msg = cfg->getOption("password_msg");
+        msg = password_message;
         XftTextExtents8(Dpy, enterfont, (XftChar8*)msg.c_str(),
                         strlen(msg.c_str()), &extents);
         cfgX = cfg->getOption("password_x");
@@ -539,7 +549,7 @@ void Panel::ShowText(){
         }
     }
     if (!singleInputMode|| field == Get_Name ) {
-        msg = cfg->getOption("username_msg");
+        msg = username_message;
         XftTextExtents8(Dpy, enterfont, (XftChar8*)msg.c_str(),
                         strlen(msg.c_str()), &extents);
         cfgX = cfg->getOption("username_x");
